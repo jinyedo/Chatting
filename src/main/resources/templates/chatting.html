@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="https://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Chating</title>
+    <style>
+        * {
+            margin:0;
+            padding:0;
+        }
+        .container {
+            width: 500px;
+            margin: 0 auto;
+            padding: 25px
+        }
+        .container h1 {
+            text-align: left;
+            padding: 5px 5px 5px 15px;
+            color: #FFBB00;
+            border-left: 3px solid #FFBB00;
+            margin-bottom: 20px;
+        }
+        #chatting-grid {
+            background-color: #000;
+            width: 500px;
+            height: 500px;
+            overflow: auto;
+        }
+        #chatting-grid p{
+            color: #fff;
+            text-align: left;
+        }
+        input{
+            width: 330px;
+            height: 25px;
+        }
+        #wrap_msg{
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="container" class="container">
+        <h1>채팅</h1>
+
+        <div id="chatting-grid"></div>
+
+        <div id="wrap_username">
+            <table class="inputTable">
+                <tr>
+                    <th>사용자명</th>
+                    <th><input type="text" name="username" id="username" /></th>
+                    <th><button onclick="chatName()" id="startBtn">이름 등록</button></th>
+                </tr>
+            </table>
+        </div>
+        <div id="wrap_msg">
+            <table class="inputTable">
+                <tr>
+                    <th>메시지</th>
+                    <th><input type="text" name="msg" id="msg" placeholder="보내실 메시지를 입력하세요." /></th>
+                    <th><button onclick="send()" id="sendBtn">보내기</button></th>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+<script>
+    let ws;
+
+    function wsOpen() {
+        ws = new WebSocket("ws://" + location.host + "/ws/chatting");
+        wsEvent();
+    }
+
+    function wsEvent() {
+        ws.onopen = function (data) {
+            // 소켓이 열리면 초기화 세팅하기
+        }
+        ws.onmessage = function (data) {
+            const msg = data.data;
+            if (msg !== null && msg.trim() !== "") {
+                $("#chatting-grid").append(`<p>${msg}</p>`);
+            }
+        }
+        document.addEventListener("keypress", function (e) {
+            if (e.keyCode === 13) send();
+        })
+    }
+
+    function chatName(){
+        const username = $("#username").val();
+        if(username === null || username.trim() === ""){
+            alert("사용자 이름을 입력해주세요.");
+            $("#username").focus();
+        }else{
+            wsOpen();
+            $("#wrap_username").hide();
+            $("#wrap_msg").show();
+        }
+    }
+
+    function send() {
+        const usernameN = $("#username").val();
+        const msg = $("#msg").val();
+        ws.send(usernameN+" : "+msg);
+        $('#msg').val("");
+    }
+</script>
+</body>
+</html>

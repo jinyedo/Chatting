@@ -2,7 +2,7 @@
 <html lang="ko" xmlns:th="https://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Chating</title>
+    <title>Chatting</title>
     <style>
         * {
             margin:0;
@@ -26,8 +26,12 @@
             height: 500px;
             overflow: auto;
         }
-        #chatting-grid p{
-            color: #fff;
+        #chatting-grid .me{
+            color: #F6F6F6;
+            text-align: right;
+        }
+        #chatting-grid .others{
+            color: #FFE400;
             text-align: left;
         }
         input{
@@ -42,6 +46,8 @@
 <body>
     <div id="container" class="container">
         <h1>채팅</h1>
+
+        <input type="hidden" name="sessionId" id="sessionId" value="">
 
         <div id="chatting-grid"></div>
 
@@ -79,9 +85,25 @@
             // 소켓이 열리면 초기화 세팅하기
         }
         ws.onmessage = function (data) {
+            console.log(data);
             const msg = data.data;
             if (msg !== null && msg.trim() !== "") {
-                $("#chatting-grid").append(`<p>${msg}</p>`);
+                const jsonData = JSON.parse(msg);
+
+                if (jsonData.type === "getId") {
+                    const si = jsonData.sessionId !== null ? jsonData.sessionId : "";
+                    if (si !== "") $("#sessionId").val(si);
+
+                } else if (jsonData.type === "message") {
+                    if (jsonData.sessionId === $("#sessionId").val()) {
+                        $("#chatting-grid").append(`<p class="me">나 : ${jsonData.msg}</p>`);
+                    } else {
+                        $("#chatting-grid").append(`<p class="others">${jsonData.username} : ${jsonData.msg}</p>`);
+                    }
+
+                } else {
+                    console.warn("unknown type!")
+                }
             }
         }
         document.addEventListener("keypress", function (e) {
@@ -102,9 +124,13 @@
     }
 
     function send() {
-        const usernameN = $("#username").val();
-        const msg = $("#msg").val();
-        ws.send(usernameN+" : "+msg);
+        const option = {
+            type : "message",
+            sessionId : $("#sessionId").val(),
+            username : $("#username").val(),
+            msg : $("#msg").val()
+        }
+        ws.send(JSON.stringify(option));
         $('#msg').val("");
     }
 </script>

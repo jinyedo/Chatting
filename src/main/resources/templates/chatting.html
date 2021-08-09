@@ -48,6 +48,7 @@
         <h1>채팅</h1>
 
         <input type="hidden" name="sessionId" id="sessionId" value="">
+        <input type="hidden" name="roomNumber" id="roomNumber" th:value="${roomNumber}">
 
         <div id="chatting-grid"></div>
 
@@ -76,7 +77,8 @@
     let ws;
 
     function wsOpen() {
-        ws = new WebSocket("ws://" + location.host + "/ws/chatting");
+        // 웹소켓 전송시 현재 방의 반호를 넘겨서 보낸다.
+        ws = new WebSocket(`ws://${location.host}/ws/chatting/${$("#roomNumber").val()}`);
         wsEvent();
     }
 
@@ -85,6 +87,7 @@
             // 소켓이 열리면 초기화 세팅하기
         }
         ws.onmessage = function (data) {
+            // 메시지를 받으면 동작
             console.log(data);
             const msg = data.data;
             if (msg !== null && msg.trim() !== "") {
@@ -127,6 +130,7 @@
         const option = {
             type : "message",
             sessionId : $("#sessionId").val(),
+            roomNumber : $("#roomNumber").val(),
             username : $("#username").val(),
             msg : $("#msg").val()
         }

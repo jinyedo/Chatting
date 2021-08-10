@@ -3,45 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Chatting</title>
-    <style>
-        * {
-            margin:0;
-            padding:0;
-        }
-        .container {
-            width: 500px;
-            margin: 0 auto;
-            padding: 25px
-        }
-        .container h1 {
-            text-align: left;
-            padding: 5px 5px 5px 15px;
-            color: #FFBB00;
-            border-left: 3px solid #FFBB00;
-            margin-bottom: 20px;
-        }
-        #chatting-grid {
-            background-color: #000;
-            width: 500px;
-            height: 500px;
-            overflow: auto;
-        }
-        #chatting-grid .me{
-            color: #F6F6F6;
-            text-align: right;
-        }
-        #chatting-grid .others{
-            color: #FFE400;
-            text-align: left;
-        }
-        input{
-            width: 330px;
-            height: 25px;
-        }
-        #wrap_msg{
-            display: none;
-        }
-    </style>
+    <link rel="stylesheet" th:href="@{/css/chatting.css}">
 </head>
 <body>
     <div id="container" class="container">
@@ -68,6 +30,11 @@
                     <th><input type="text" name="msg" id="msg" placeholder="보내실 메시지를 입력하세요." /></th>
                     <th><button onclick="send()" id="sendBtn">보내기</button></th>
                 </tr>
+                <tr>
+                    <th>파일업로드</th>
+                    <th><input type="file" name="fileUpload" id="fileUpload"></th>
+                    <th><button id="sendFileBtn" onclick="fileSend()">파일올리기</button></th>
+                </tr>
             </table>
         </div>
     </div>
@@ -75,9 +42,11 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
 <script>
     let ws;
+    let fileClassName;
+    let username;
 
+    // 사용자 이름까지 입력하면 웹소켓 연결 및 웹소켓 이벤트 바인딩
     function wsOpen() {
-        // 웹소켓 전송시 현재 방의 반호를 넘겨서 보낸다.
         ws = new WebSocket(`ws://${location.host}/ws/chatting/${$("#roomNumber").val()}`);
         wsEvent();
     }
@@ -88,25 +57,38 @@
         }
         ws.onmessage = function (data) {
             // 메시지를 받으면 동작
-            console.log(data);
             const msg = data.data;
-            if (msg !== null && msg.trim() !== "") {
-                const jsonData = JSON.parse(msg);
+            console.log(data);
+            console.log(msg);
 
+            if (msg !== null && msg.type !== "") { // 파일 업로드가 아닌 경우 메시지를 뿌려준다.
+                const jsonData = JSON.parse(msg);
                 if (jsonData.type === "getId") {
                     const si = jsonData.sessionId !== null ? jsonData.sessionId : "";
                     if (si !== "") $("#sessionId").val(si);
 
                 } else if (jsonData.type === "message") {
                     if (jsonData.sessionId === $("#sessionId").val()) {
-                        $("#chatting-grid").append(`<p class="me">나 : ${jsonData.msg}</p>`);
+                        $("#chatting-grid").append(`<p class="me">${jsonData.msg}</p>`);
                     } else {
                         $("#chatting-grid").append(`<p class="others">${jsonData.username} : ${jsonData.msg}</p>`);
                     }
-
+                } else if (jsonData.type === "fileUpload") {
+                    fileClassName =  jsonData.sessionId === $("#sessionId").val() ? "myImg" : "othersImg";
+                    username = jsonData.username;
                 } else {
                     console.warn("unknown type!")
                 }
+
+            } else { // 파일 업로드한 경우 업로드한 파일을 채팅방에 뿌려준다.
+                const url = URL.createObjectURL(new Blob([msg]));
+                if (fileClassName === "othersImg") {
+                    $("#chatting-grid").append(`<div class="${fileClassName}"><span>${username} : </span><img class="img" src="${url}" /></div><div class="clearBoth"></div>`);
+                } else {
+                    $("#chatting-grid").append(`<div class="${fileClassName}"><img class="img" src="${url}" /></div><div class="clearBoth"></div>`);
+                }
+
+
             }
         }
         document.addEventListener("keypress", function (e) {
@@ -126,6 +108,7 @@
         }
     }
 
+    // 문자 메시지 전송시 이벤트 처리
     function send() {
         const option = {
             type : "message",
@@ -134,8 +117,28 @@
             username : $("#username").val(),
             msg : $("#msg").val()
         }
-        ws.send(JSON.stringify(option));
+        ws.send(JSON.stringify(option)); // JSON 형식으로 전달
         $('#msg').val("");
+    }
+
+    // 사진 전송시 이벤트 처리
+    function fileSend() {
+        const file = document.querySelector("#fileUpload").files[0];
+        const fileReader = new FileReader();
+        fileReader.onload = function () {
+            const param = {
+                type : "fileUpload",
+                file : file,
+                filename : file.name,
+                sessionId : $("#sessionId").val(),
+                roomNumber : $("#roomNumber").val(),
+                username : $("#username").val(),
+            }
+            ws.send(JSON.stringify(param)); // 파일을 보내기전 메시지를 보내서 파일을 보냄을 명시한다.
+            const arrayBuffer = this.result;
+            ws.send(arrayBuffer); // 파일 소켓 전송
+        }
+        fileReader.readAsArrayBuffer(file);
     }
 </script>
 </body>

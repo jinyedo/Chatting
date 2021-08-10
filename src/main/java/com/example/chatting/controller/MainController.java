@@ -3,7 +3,10 @@ package com.example.chatting.controller;
 import com.example.chatting.dto.RoomDTO;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.ArrayList;
@@ -38,22 +41,23 @@ public class MainController {
                     .roomName(roomName)
                     .roomNumber(++roomNumber)
                     .build();
+            log.info("[채팅방 생성] roomNumber: " +  roomNumber + ", roomName: " + roomName);
             roomList.add(roomDTO);
         }
         return roomList;
     }
 
     // 방 정보 가져오기
-    @RequestMapping("/getRoom")
+    @RequestMapping("/getRoomList")
     @ResponseBody
-    public List<RoomDTO> getRoom(@RequestParam HashMap<Object, Object> params) {
+    public List<RoomDTO> getRoomList() {
         return roomList;
     }
 
     // 채팅방
     @RequestMapping("/moveChatting")
     public ModelAndView chatting(@RequestParam HashMap<Object, Object> params) {
-        log.info("채팅방 입장");
+        log.info("[채팅방 입장] roomNumber: " + params.get("roomNumber") + ", roomName: " + params.get("roomName"));
         ModelAndView mv = new ModelAndView();
         int roomNumber = Integer.parseInt((String) params.get("roomNumber"));
         List<RoomDTO> result = roomList.stream().filter(o -> o.getRoomNumber() == roomNumber).collect(Collectors.toList());

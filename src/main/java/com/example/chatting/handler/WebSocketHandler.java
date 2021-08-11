@@ -1,5 +1,7 @@
 package com.example.chatting.handler;
 
+import com.example.chatting.repository.StorageRepository;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -21,15 +23,16 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 @Component
+@RequiredArgsConstructor
 @Log4j2
 public class WebSocketHandler extends TextWebSocketHandler {
 
+    private final StorageRepository storageRepository;
+
     List<LinkedHashMap<String, Object>> sessionList = new ArrayList<>(); // 웹소켓 세션을 담아둘 리스트
-    private static final String FILE_UPLOAD_PATH = "C:/websocket/";
     int fileUploadIdx = 0; // 파일을 전송한 방의 번호
     String fileUploadSession = ""; // 파일을 전송한 방의 세션 ID
     String filename = "";
-
 
     @SuppressWarnings("unchecked")
     @Override // 소켓 연결
@@ -115,33 +118,8 @@ public class WebSocketHandler extends TextWebSocketHandler {
     @Override // BinaryMessage 의 데이터가 들어오면 실행
     protected void handleBinaryMessage(WebSocketSession session, BinaryMessage message) {
         log.info("----- 바이너리 메시지 발송 -----");
-        ByteBuffer byteBuffer = message.getPayload();
-        log.info(message.getPayload());
-        String fileName = filename;
-        File dir = new File(FILE_UPLOAD_PATH);
-        if (!dir.exists()) dir.mkdirs();
-
-        File file = new File(FILE_UPLOAD_PATH, fileName);
-        FileOutputStream out = null;
-        FileChannel outChannel = null;
-        try {
-            byteBuffer.flip(); // byteBuffer 를 읽기 위해서 세팅
-            out = new FileOutputStream(file, true); // 생성을 위해 OutputStream 을 연다.
-            outChannel = out.getChannel(); // 채널을 열고
-            byteBuffer.compact(); // 파일을 복사한다.
-            outChannel.write(byteBuffer); // 파일을 쓴다.
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                if (out != null) out.close();
-                if (outChannel != null) outChannel.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-        byteBuffer.position(0); // 파일을 저장하면서 position 값이 변경되었으므로 0으로 초기화한다.
+        log.info(message);
+        ByteBuffer byteBuffer = storageRepository.save(filename, message);
 
         // 파일 쓰기가 끝나면 이미지를 발송한다.
         LinkedHashMap<String, Object> temp = sessionList.get(fileUploadIdx);

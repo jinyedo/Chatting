@@ -82,6 +82,7 @@
 
             } else { // 파일 업로드한 경우 업로드한 파일을 채팅방에 뿌려준다.
                 const url = URL.createObjectURL(new Blob([msg]));
+                console.log(url);
                 if (fileClassName === "othersImg") {
                     $("#chatting-grid").append(`<div class="${fileClassName}"><span>${username} : </span><img class="img" src="${url}" /></div><div class="clearBoth"></div>`);
                 } else {

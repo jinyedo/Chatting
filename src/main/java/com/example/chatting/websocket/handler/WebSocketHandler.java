@@ -1,6 +1,6 @@
-package com.example.chatting.handler;
+package com.example.chatting.websocket.handler;
 
-import com.example.chatting.repository.StorageRepository;
+import com.example.chatting.storage.StorageRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.json.simple.JSONObject;

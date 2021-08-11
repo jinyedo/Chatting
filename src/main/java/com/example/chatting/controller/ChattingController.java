@@ -1,9 +1,8 @@
 package com.example.chatting.controller;
 
-import com.example.chatting.dto.RoomDTO;
-import com.example.chatting.repository.ChattingRepository;
+import com.example.chatting.service.chatting.ChattingRepository;
+import com.example.chatting.service.room.RoomDTO;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;

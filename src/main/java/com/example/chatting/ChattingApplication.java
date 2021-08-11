@@ -1,15 +1,17 @@
 package com.example.chatting;
 
-import com.example.chatting.repository.StorageRepository;
 import com.example.chatting.storage.StorageProperties;
+import com.example.chatting.storage.StorageRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 @EnableConfigurationProperties(StorageProperties.class)
 @SpringBootApplication
+@EnableJpaAuditing
 public class ChattingApplication {
 
     public static void main(String[] args) {

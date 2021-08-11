@@ -1,6 +1,5 @@
-package com.example.chatting.repository;
+package com.example.chatting.storage;
 
-import com.example.chatting.storage.StorageProperties;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.FileSystemUtils;
 import org.springframework.web.socket.BinaryMessage;

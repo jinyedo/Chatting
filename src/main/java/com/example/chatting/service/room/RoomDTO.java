@@ -1,4 +1,4 @@
-package com.example.chatting.dto;
+package com.example.chatting.service.room;
 
 import lombok.Builder;
 import lombok.Getter;

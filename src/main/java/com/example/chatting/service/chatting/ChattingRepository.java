@@ -1,6 +1,6 @@
-package com.example.chatting.repository;
+package com.example.chatting.service.chatting;
 
-import com.example.chatting.dto.RoomDTO;
+import com.example.chatting.service.room.RoomDTO;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;

@@ -1,4 +1,4 @@
-package com.example.chatting.websocket.handler;
+package com.example.chatting.websocket;
 
 import com.example.chatting.storage.StorageRepository;
 import lombok.RequiredArgsConstructor;

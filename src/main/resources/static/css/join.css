@@ -1,0 +1,195 @@
+.join-form__title {
+    width: 100%;
+  }
+  
+.join-form__title h1 {
+    text-align: center;
+    margin-top: 100px;
+    margin-bottom: 20px;
+    font-weight: 600;
+    font-size: 30px;
+    padding: 0 20px;
+    color: #FFBB00;
+  }
+  
+#join-form {
+    display: flex;
+    flex-direction: column;
+    padding: 0 20px;
+    margin-bottom: 40px;
+  }
+  
+#join-form span {
+    font-size: 24px;
+    font-weight: 500;
+    padding-top: 45px;
+    padding-bottom: 10px;
+  }
+  
+#join-form input {
+    margin: 15px 0;
+    font-size: 22px;
+    border: none;
+  }
+
+.input_1 {
+    width: 100%;
+}
+
+
+.id_box, .phone_box {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+}
+
+#join-form input:not([type="submit"]) {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.3);
+  }
+  
+#join-form input::placeholder {
+    color: rgba(0, 0, 0, 0.2);
+    font-size: 0.6rem;
+    font-weight: 600;
+  }
+  
+#join-form input[type="submit"] {
+    border-radius: 10px;
+    background-color: #FFBB00;
+    color: #fff;
+    height: 70px;
+    cursor: pointer;
+  }
+  
+#join-form label {
+    font-size: 18px;
+    font-weight: bold;
+    color: rgba(0, 0, 0, 0.7);
+  }
+
+#join-form input[type="button"] {
+    border-radius: 10px;
+    background-color: #FFBB00;
+    color: #fff;
+    height: 70px;
+    cursor: pointer;
+}
+
+  @media screen and (max-width: 400px) {
+    .G-COACH__title {
+      width: 85%;
+    }
+  
+    .join-form__title h1 {
+      margin-bottom: 5px;
+      font-size: 20px;
+    }
+  
+    #join-form {
+      margin-bottom: 10px;
+    }
+  
+    #join-form span {
+      font-size: 16px;
+      padding-top: 25px;
+    }
+  
+    #join-form input {
+      font-size: 15px;
+    }
+  
+    #join-form label {
+      font-size: 12px;
+      font-weight: bold;
+    }
+  
+    #join-form input[type="submit"] {
+      height: 40px;
+      font-size: 12px;
+    }
+
+    #join-form input::placeholder {
+      color: rgba(0, 0, 0, 0.4);
+      font-size: 0.6rem;
+      font-weight: 600;
+    }
+  
+    #join-form a {
+      font-size: 16px;
+    }
+
+    .input_1 {
+      width: 100%;
+    }
+  }
+
+@media screen and (max-width: 320px) {
+    #join-form input[type="submit"] {
+        height: 36px;
+        font-size: 10px;
+    }
+
+    #join-form a {
+        font-size: 12px;
+    }
+
+    .input_1 {
+        width: 100%;
+    }
+
+    #join-form input::placeholder {
+        color: rgba(0, 0, 0, 0.4);
+        font-size: 0.9rem;
+        font-weight: 600;
+    }
+}
+  
+  @media screen and (min-height: 900px) {
+    .G-COACH__title {
+      width: 60%;
+    }
+  
+    .G-COACH__title img {
+      padding: 40px 0;
+    }
+  
+    .join-form__title h1 {
+      margin-bottom: 60px;
+      font-size: 40px;
+    }
+  
+    #join-form {
+      margin-bottom: 60px;
+    }
+  
+    #join-form span {
+      font-size: 30px;
+      padding-top: 40px;
+    }
+  
+    #join-form input {
+      font-size: 30px;
+    }
+  
+    #join-form label {
+      margin: 40px 0;
+      font-size: 22px;
+      font-weight: bold;
+    }
+  
+    #join-form input[type="submit"] {
+      margin: 20px 0;
+      height: 80px;
+    }
+
+    #join-form input::placeholder {
+      color: rgba(0, 0, 0, 0.4);
+      font-size: 1.3rem;
+      font-weight: 600;
+    }
+  
+    #join-form a {
+      margin: 20px 0;
+      font-size: 30px;
+    }
+  }

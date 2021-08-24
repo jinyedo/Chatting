@@ -15,7 +15,7 @@ public class MemberService {
     BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     public String join(MemberDTO memberDTO) {
-        Optional<Member> result =  memberRepository.findByUsername(memberDTO.getUsername());
+        Optional<Member> result =  memberRepository.findByUsernameAndFormSocial(memberDTO.getUsername(), false);
         if (result.isPresent()) return "fail";
         Member member = dtoToEntity(memberDTO);
         memberRepository.save(member);
@@ -23,7 +23,7 @@ public class MemberService {
     }
 
     public String checkUsername(MemberDTO memberDTO) {
-        Optional<Member> result = memberRepository.findByUsername(memberDTO.getUsername());
+        Optional<Member> result = memberRepository.findByUsernameAndFormSocial(memberDTO.getUsername(), false);
         if (result.isPresent()) return "fail";
         return "success";
     }
@@ -33,6 +33,7 @@ public class MemberService {
                 .username(dto.getUsername())
                 .password(passwordEncoder.encode(dto.getPassword()))
                 .name(dto.getName())
+                .formSocial(false)
                 .build();
         member.addMemberRole(MemberRole.USER);
         return member;

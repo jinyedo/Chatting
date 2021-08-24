@@ -30,11 +30,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+        // 일반 로그인
         http.formLogin()
                 .loginPage("/")
                 .failureUrl("/") // 인가/인증에 문제시 로그인 화면으로 이동
                 .defaultSuccessUrl("/room", true)
                 .failureHandler(failureHandler());
+
+        // 소셜 로그인
+        http.oauth2Login()// 로그인 시에 OAuth 를 사용한 로그인이 가능하도록
+                .loginPage("/")
+                .failureUrl("/") // 인가/인증에 문제시 로그인 화면으로 이동
+                .defaultSuccessUrl("/room", true);
 
         // 자동 로그인 설정
         http.rememberMe()

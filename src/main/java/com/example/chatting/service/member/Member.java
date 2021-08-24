@@ -24,6 +24,10 @@ public class Member extends BaseEntity {
 
     private String name;
 
+    private boolean formSocial; // 소셜 로그인 유무
+
+    private String socialType; // 소셜 로그인 타입
+
     @Enumerated(EnumType.STRING)
     @ElementCollection(fetch = FetchType.LAZY)
     @Builder.Default

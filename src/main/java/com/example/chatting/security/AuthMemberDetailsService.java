@@ -24,7 +24,7 @@ public class AuthMemberDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         log.info("MemberUserDetailsService loadUserByUsername : " + username);
 
-        Optional<Member> result = memberRepository.findByUsername(username);
+        Optional<Member> result = memberRepository.findByUsernameAndFormSocial(username,false);
         if (result.isPresent()) {
             Member member = result.get();
             log.info("Member : " + member);
@@ -32,6 +32,7 @@ public class AuthMemberDetailsService implements UserDetailsService {
             return new AuthMemberDTO(
                     member.getUsername(),
                     member.getPassword(),
+                    member.isFormSocial(),
                     member.getRoleSet().stream().map(role ->
                             new SimpleGrantedAuthority("ROLE_" + role.name())
                     ).collect(Collectors.toSet())

@@ -1,14 +1,13 @@
-package com.example.chatting.service.member;
+package com.example.chatting.service.chatting;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import lombok.experimental.SuperBuilder;
 
-@SuperBuilder
 @NoArgsConstructor
 @Getter @Setter
 @ToString
-public class MemberDTO extends Member {
+public class ChattingDTO extends Chatting {
+
 }

@@ -1,15 +1,10 @@
 package com.example.chatting.service.room;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
-@Builder
+@NoArgsConstructor
 @Getter @Setter
 @ToString
-public class RoomDTO {
+public class RoomDTO extends Room {
 
-    private int roomNumber;
-    private String roomName;
 }

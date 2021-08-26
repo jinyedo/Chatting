@@ -31,7 +31,7 @@
 
         // Ajax 로 방 목록 정보 불러오기 - 페이지 로드되면 바로 실행
         function getRoom() {
-            commonAjax("/getRoomList", "", "post", null, function (result) {
+            commonAjax("/room/getRoomList", "", "post", null, function (result) {
                 console.log(result);
                 // 불러온 정보로 방 목록 생성
                 gridChattingRoom(result);
@@ -44,17 +44,19 @@
                 roomName: $(".roomName").val()
             };
 
-            commonAjax("/createRoom", roomName, "post", null, function(result){
+            commonAjax("/room/createRoom", roomName, "post", null, function(result){
+                alert("채팅방 생성이 완료되었습니다.");
                 console.log(result);
-                gridChattingRoom(result);
+                getRoom();
+                goRoom(result.roomId, result.roomName);
             });
 
             $(".roomName").val("");
         }
 
         // 선택한 채팅방으로 이동
-        function goRoom(roomName, roomNumber) {
-            location.href = `/moveChatting?roomName=${roomName}&roomNumber=${roomNumber}`;
+        function goRoom(roomId, roomName) {
+            location.href = `/room/moveChatting?roomId=${roomId}&roomName=${roomName}`;
         }
 
         // 방 목록 뿌리기
@@ -62,31 +64,32 @@
             if (result !== null) {
                 // 헤더 생성
                 let tag = `<tr>
-                        <th class="num">순서</th>
+                        <th class="num">방 번호</th>
                         <th class="room">방 이름</th>
                         <th class="go"></th>
                     </tr>`;
 
                 // 방 개수만큼 row 생성
                 result.forEach(function (data, idx) {
+                    const roomId = data.roomId;
                     const roomName = data.roomName.trim();
-                    const roomNumber = data.roomNumber;
                     tag += `<tr>
                             <td class="num">${idx + 1}</td>
                             <td class="room">${roomName}</td>
-                            <td class="go"><button onclick='goRoom(\"${roomName}\", \"${roomNumber}\")'>참여</button></td>
+                            <td class="go"><button onclick='goRoom(\"${roomId}\", \"${roomName}\")'>참여</button></td>
                         </tr>`;
                 });
-                $(".roomList").empty().append(tag);
+                //$(".roomList").empty().append(tag);
+                $(".roomList").html(tag);
             }
         }
 
         function commonAjax(url, param, type, contentType, callback) {
             $.ajax({
                 url : url,
-                data : param,
+                data : JSON.stringify(param),
                 type : type,
-                contentType : contentType !== null ? contentType : "application/x-www-form-urlencoded; charset=UTF-8",
+                contentType : contentType !== null ? contentType : "application/json; charset=UTF-8",
                 success: function (res) {
                     callback(res)
                 },

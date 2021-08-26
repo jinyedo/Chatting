@@ -10,19 +10,11 @@
         <h1>채팅</h1>
 
         <input type="hidden" name="sessionId" id="sessionId" value="">
-        <input type="hidden" name="roomNumber" id="roomNumber" th:value="${roomNumber}">
+        <input type="hidden" name="roomId" id="roomId" th:value="${roomId}">
+        <input type="hidden" name="name" id="name" th:value="${name}">
 
         <div id="chatting-grid"></div>
 
-        <div id="wrap_username">
-            <table class="inputTable">
-                <tr>
-                    <th>사용자명</th>
-                    <th><input type="text" name="username" id="username" /></th>
-                    <th><button onclick="chatName()" id="startBtn">이름 등록</button></th>
-                </tr>
-            </table>
-        </div>
         <div id="wrap_msg">
             <table class="inputTable">
                 <tr>
@@ -40,14 +32,19 @@
     </div>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
-<script>
+<script th:inline="javascript">
     let ws;
     let fileClassName;
-    let username;
+    let name = [[${name}]];
+
+    window.onload = function () {
+        console.log(name);
+        wsOpen();
+    }
 
     // 사용자 이름까지 입력하면 웹소켓 연결 및 웹소켓 이벤트 바인딩
     function wsOpen() {
-        ws = new WebSocket(`ws://${location.host}/ws/chatting/${$("#roomNumber").val()}`);
+        ws = new WebSocket(`ws://${location.host}/ws/chatting/${$("#roomId").val()}`);
         wsEvent();
     }
 
@@ -71,11 +68,11 @@
                     if (jsonData.sessionId === $("#sessionId").val()) {
                         $("#chatting-grid").append(`<p class="me">${jsonData.msg}</p>`);
                     } else {
-                        $("#chatting-grid").append(`<p class="others">${jsonData.username} : ${jsonData.msg}</p>`);
+                        $("#chatting-grid").append(`<p class="others">${jsonData.name} : ${jsonData.msg}</p>`);
                     }
                 } else if (jsonData.type === "fileUpload") {
                     fileClassName =  jsonData.sessionId === $("#sessionId").val() ? "myImg" : "othersImg";
-                    username = jsonData.username;
+                    name = jsonData.name;
                 } else {
                     console.warn("unknown type!")
                 }
@@ -84,7 +81,7 @@
                 const url = URL.createObjectURL(new Blob([msg]));
                 console.log(url);
                 if (fileClassName === "othersImg") {
-                    $("#chatting-grid").append(`<div class="${fileClassName}"><span>${username} : </span><img class="img" src="${url}" /></div><div class="clearBoth"></div>`);
+                    $("#chatting-grid").append(`<div class="${fileClassName}"><span>${name} : </span><img class="img" src="${url}" /></div><div class="clearBoth"></div>`);
                 } else {
                     $("#chatting-grid").append(`<div class="${fileClassName}"><img class="img" src="${url}" /></div><div class="clearBoth"></div>`);
                 }
@@ -97,25 +94,13 @@
         })
     }
 
-    function chatName(){
-        const username = $("#username").val();
-        if(username === null || username.trim() === ""){
-            alert("사용자 이름을 입력해주세요.");
-            $("#username").focus();
-        }else{
-            wsOpen();
-            $("#wrap_username").hide();
-            $("#wrap_msg").show();
-        }
-    }
-
     // 문자 메시지 전송시 이벤트 처리
     function send() {
         const option = {
             type : "message",
             sessionId : $("#sessionId").val(),
-            roomNumber : $("#roomNumber").val(),
-            username : $("#username").val(),
+            roomId : $("#roomId").val(),
+            name : $("#name").val(),
             msg : $("#msg").val()
         }
         ws.send(JSON.stringify(option)); // JSON 형식으로 전달
@@ -132,8 +117,8 @@
                 file : file,
                 filename : file.name,
                 sessionId : $("#sessionId").val(),
-                roomNumber : $("#roomNumber").val(),
-                username : $("#username").val(),
+                roomId : $("#roomId").val(),
+                name : $("#name").val(),
             }
             ws.send(JSON.stringify(param)); // 파일을 보내기전 메시지를 보내서 파일을 보냄을 명시한다.
             const arrayBuffer = this.result;

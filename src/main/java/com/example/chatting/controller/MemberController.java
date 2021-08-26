@@ -1,6 +1,6 @@
 package com.example.chatting.controller;
 
-import com.example.chatting.service.member.MemberDTO;
+import com.example.chatting.security.ValidationMemberDTO;
 import com.example.chatting.service.member.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -17,7 +17,7 @@ public class MemberController {
 
     @RequestMapping("/checkUsername")
     @ResponseBody
-    public String checkUsername(MemberDTO memberDTO) {
+    public String checkUsername(ValidationMemberDTO memberDTO) {
         log.info("checkUsername : " + memberDTO.getUsername());
         String result = memberService.checkUsername(memberDTO);
         log.info(result);

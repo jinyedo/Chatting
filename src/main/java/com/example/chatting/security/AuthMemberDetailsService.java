@@ -1,6 +1,7 @@
 package com.example.chatting.security;
 
 import com.example.chatting.service.member.Member;
+import com.example.chatting.service.member.MemberEntity;
 import com.example.chatting.service.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -24,14 +25,15 @@ public class AuthMemberDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         log.info("MemberUserDetailsService loadUserByUsername : " + username);
 
-        Optional<Member> result = memberRepository.findByUsernameAndFormSocial(username,false);
+        Optional<MemberEntity> result = memberRepository.findByUsernameAndFormSocial(username,false);
         if (result.isPresent()) {
-            Member member = result.get();
+            MemberEntity member = result.get();
             log.info("Member : " + member);
 
             return new AuthMemberDTO(
                     member.getUsername(),
                     member.getPassword(),
+                    member.getName(),
                     member.isFormSocial(),
                     member.getRoleSet().stream().map(role ->
                             new SimpleGrantedAuthority("ROLE_" + role.name())

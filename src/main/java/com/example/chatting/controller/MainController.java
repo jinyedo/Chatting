@@ -1,6 +1,6 @@
 package com.example.chatting.controller;
 
-import com.example.chatting.service.member.MemberDTO;
+import com.example.chatting.security.ValidationMemberDTO;
 import com.example.chatting.service.member.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -33,14 +33,15 @@ public class MainController {
     }
 
     @GetMapping("/join")
-    public String getJoin(MemberDTO memberDTO) {
+    public String getJoin(ValidationMemberDTO validationMemberDTO, Model model) {
+        model.addAttribute("validationMemberDTO", validationMemberDTO);
         return "join";
     }
 
     @PostMapping("/join")
-    public String postJoin(@Valid MemberDTO memberDTO, Errors errors, Model model, RedirectAttributes redirectAttributes) {
+    public String postJoin(@Valid ValidationMemberDTO validationMemberDTO, Errors errors, Model model, RedirectAttributes redirectAttributes) {
         if (errors.hasErrors()) {
-            model.addAttribute("memberDTO", memberDTO); // 회원가입 실패시, 입력 데이터를 유지
+            model.addAttribute("memberDTO", validationMemberDTO); // 회원가입 실패시, 입력 데이터를 유지
             log.info("-----유효성 검사 오류 종류-----");
             for (FieldError error : errors.getFieldErrors()) {
                 log.info(String.format("valid_%s", error.getField()) + " : " + error.getDefaultMessage());
@@ -48,11 +49,11 @@ public class MainController {
             log.info("----------------------------");
             return "join";
         }
-        String result = memberService.join(memberDTO);
+        String result = memberService.join(validationMemberDTO);
         if (result.equals("fail")) {
-            model.addAttribute("memberDTO", memberDTO);
-            model.addAttribute("msg", memberDTO.getUsername() + "은 이미 존재하는 아이디입니다.");
-            return "/join";
+            model.addAttribute("memberDTO", validationMemberDTO);
+            model.addAttribute("msg", validationMemberDTO.getUsername() + "은 이미 존재하는 아이디입니다.");
+            return "join";
         } else if (result.equals("success")) {
             redirectAttributes.addFlashAttribute("msg", "회원가입 성공");
             return "redirect:/";

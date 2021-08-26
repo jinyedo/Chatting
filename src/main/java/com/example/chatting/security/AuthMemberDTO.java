@@ -22,23 +22,26 @@ public class AuthMemberDTO extends User implements OAuth2User {
     public AuthMemberDTO(
             String username,
             String password,
+            String name,
             boolean formSocial,
             Collection<? extends GrantedAuthority> authorities) {
 
         super(username, password, authorities);
         this.username = username;
         this.password = password;
+        this.name = name;
         this.formSocial = formSocial;
     }
 
     public AuthMemberDTO(
             String username,
             String password,
+            String name,
             boolean formSocial,
             Collection<? extends GrantedAuthority> authorities,
             Map<String, Object> attr) {
 
-        this(username, password, formSocial, authorities);
+        this(username, password, name, formSocial, authorities);
         this.attr = attr;
     }
 

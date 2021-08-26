@@ -1,6 +1,8 @@
 package com.example.chatting.service.member;
 
 import com.example.chatting.security.MemberRole;
+import com.example.chatting.security.ValidationMemberDTO;
+import com.example.chatting.service.base.BaseService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -9,34 +11,31 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class MemberService {
+public class MemberService extends BaseService<String, MemberEntity, MemberDTO, MemberRepository> {
 
     private final MemberRepository memberRepository;
     BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-    public String join(MemberDTO memberDTO) {
-        Optional<Member> result =  memberRepository.findByUsernameAndFormSocial(memberDTO.getUsername(), false);
-        if (result.isPresent()) return "fail";
-        Member member = dtoToEntity(memberDTO);
-        memberRepository.save(member);
+    public String join(ValidationMemberDTO dto) {
+        Optional<MemberEntity> result =  memberRepository.findByUsernameAndFormSocial(dto.getUsername(), false);
+        if (result.isPresent()) {
+            return "fail";
+        } else {
+            MemberEntity member = MemberEntity.builder()
+                        .username(dto.getUsername())
+                        .password(passwordEncoder.encode(dto.getPassword()))
+                        .name(dto.getName())
+                        .formSocial(false)
+                        .build();
+            member.addMemberRole(MemberRole.USER);
+            memberRepository.save(member);
+        }
         return "success";
     }
 
-    public String checkUsername(MemberDTO memberDTO) {
-        Optional<Member> result = memberRepository.findByUsernameAndFormSocial(memberDTO.getUsername(), false);
+    public String checkUsername(ValidationMemberDTO dto) {
+        Optional<MemberEntity> result = memberRepository.findByUsernameAndFormSocial(dto.getUsername(), false);
         if (result.isPresent()) return "fail";
         return "success";
     }
-
-    private Member dtoToEntity(MemberDTO dto) {
-        Member member = Member.builder()
-                .username(dto.getUsername())
-                .password(passwordEncoder.encode(dto.getPassword()))
-                .name(dto.getName())
-                .formSocial(false)
-                .build();
-        member.addMemberRole(MemberRole.USER);
-        return member;
-    }
-
 }

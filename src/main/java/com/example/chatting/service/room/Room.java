@@ -18,5 +18,5 @@ public class Room extends BaseEntity {
     @Id @DTOKey("ROOM")
     protected String roomId;
     protected String roomName;
-    protected String username;
+    protected String creator;
 }

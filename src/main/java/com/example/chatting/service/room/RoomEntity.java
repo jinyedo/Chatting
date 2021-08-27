@@ -1,7 +1,6 @@
 package com.example.chatting.service.room;
 
 import com.example.chatting.service.member.Member;
-import com.example.chatting.service.member.MemberEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,6 +15,6 @@ import javax.persistence.*;
 public class RoomEntity extends Room {
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "username", insertable = false, updatable = false)
-    private MemberEntity member;
+    @JoinColumn(name = "creator", insertable = false, updatable = false)
+    private Member member;
 }

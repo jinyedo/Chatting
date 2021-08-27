@@ -1,7 +1,6 @@
 package com.example.chatting.security;
 
 import com.example.chatting.service.member.Member;
-import com.example.chatting.service.member.MemberEntity;
 import com.example.chatting.service.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -54,7 +53,7 @@ public class OAuth2MemberDetailsService extends DefaultOAuth2UserService {
                 ? oAuth2User.getAttribute("name")
                 : Objects.requireNonNull(propertiesHashMap).get("nickname");
 
-        MemberEntity member = saveSocialMember(id, name, clientName);
+        Member member = saveSocialMember(id, name, clientName);
 
         AuthMemberDTO authMemberDTO = new AuthMemberDTO(
                 member.getUsername(),
@@ -73,16 +72,16 @@ public class OAuth2MemberDetailsService extends DefaultOAuth2UserService {
     }
 
     // 받아온 데이터로 회원가입 처리
-    private MemberEntity saveSocialMember(String username, String name, String socialType) {
+    private Member saveSocialMember(String username, String name, String socialType) {
 
-        Optional<MemberEntity> result = memberRepository.findByUsernameAndFormSocial(username, true);
+        Optional<Member> result = memberRepository.findByUsernameAndFormSocial(username, true);
 
         // 기존에 동일한 아이디로 가입한 회원이 있는 경우 조회만
         if (result.isPresent()) {
             return result.get();
         }
 
-        MemberEntity member = MemberEntity.builder()
+        Member member = Member.builder()
                 .username(username)
                 .password(passwordEncoder.encode("1111"))
                 .name(name)

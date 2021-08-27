@@ -89,7 +89,7 @@ public abstract class BaseService<K, E extends BaseEntity, D extends BaseEntity,
         }
     }
 
-    public <D extends BaseEntity> D saveEntity(D dto) {
+    public <D extends BaseEntity> D save(D dto) {
         generateKey(dto);
         if (getEntityClass().equals(dto.getClass())) {
             getRepository().save(getEntityClass().cast(dto));

@@ -18,7 +18,7 @@ public class RoomService extends BaseService<String, RoomEntity, RoomDTO, RoomRe
     }
 
     public RoomDTO createRoom(RoomDTO roomDTO) {
-        return saveEntity(roomDTO);
+        return save(roomDTO);
     }
 
     public RoomDTO findByRoomId(HashMap<Object, Object> params) {

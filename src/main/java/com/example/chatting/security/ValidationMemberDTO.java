@@ -30,4 +30,8 @@ public class ValidationMemberDTO {
     @Pattern(regexp = "[가-힣]{2,6}", message = "올바른 형식의 이름을 입력해주세요.")
     private String name; // 이름
 
+    private String msg;
+
+    @Builder.Default
+    private boolean joinSuccessYn = false;
 }

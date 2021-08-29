@@ -1,12 +1,12 @@
 package com.example.chatting.service.room.dsl;
 
 import com.example.chatting.service.room.RoomDTO;
-
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface RoomDslRepository {
 
     RoomDTO findByRoomId(String roomId);
 
-    List<RoomDTO> getRoomList();
+    Page<RoomDTO> getPagingList(Pageable pageable);
 }

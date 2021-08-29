@@ -1,5 +1,8 @@
 package com.example.chatting.websocket;
 
+import com.example.chatting.service.chatting.ChattingDTO;
+import com.example.chatting.service.chatting.ChattingRepository;
+import com.example.chatting.service.chatting.ChattingService;
 import com.example.chatting.storage.StorageRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -15,6 +18,7 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -24,6 +28,7 @@ import java.util.List;
 public class WebSocketHandler extends TextWebSocketHandler {
 
     private final StorageRepository storageRepository;
+    private final ChattingService chattingService;
 
     List<LinkedHashMap<String, Object>> sessionList = new ArrayList<>(); // 웹소켓 세션을 담아둘 리스트
     int fileUploadIdx = 0; // 파일을 전송한 방의 번호
@@ -74,17 +79,26 @@ public class WebSocketHandler extends TextWebSocketHandler {
     @Override // Text 데이터가 들어오면 실행
     public void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
         log.info("----- 일반 메시지 발송 -----");
-        String msg = message.getPayload(); // JSON 형태의 String 메시지를 받는다.
-        JSONObject obj = jsonToObjectParse(msg); // JSON 데이터를 JSONObject 로 파싱한다.
-        String rn = (String) obj.get("roomId"); // 방의 번호를 받는다.
-        String msgType = (String) obj.get("type"); // 메시지의 타입을 확인한다.
+        JSONObject obj = jsonToObjectParse(message.getPayload()); // JSON 데이터를 JSONObject 로 파싱한다.
+        log.info("requestObj : " + obj);
+
+        HashMap<String, String> msgMap = (HashMap<String, String>) obj;
+        String requestRoomId = (String) obj.get("roomId"); // 방의 번호를 받는다.
+        String requestUserId = (String) obj.get("userId"); // 회원의 ID 를 받는다.
+
+        ChattingDTO chattingDTO = ChattingDTO.builder()
+                .roomId(requestRoomId)
+                .username(requestUserId)
+                .text(msgMap.get("msg"))
+                .build();
+        chattingService.save(chattingDTO);
+
         LinkedHashMap<String, Object> temp = new LinkedHashMap<>();
-        log.info("msg : " + msg);
 
         if (sessionList.size() > 0) {
             for (int i=0; i<sessionList.size(); i++) {
                 String roomId = (String) sessionList.get(i).get("roomId"); // 세션리스트의 저장된 방 번호를 가져와
-                if (roomId.equals(rn)) { // 같은값이 방이 존재한다면
+                if (roomId.equals(requestRoomId)) { // 같은값이 방이 존재한다면
                     temp = sessionList.get(i); // 해당 방번호의 세션리스트의 존재하는 모든 object 값을 가져온다.
                     log.info("temp : "+ temp);
                     fileUploadIdx = i;

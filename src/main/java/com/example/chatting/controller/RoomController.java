@@ -5,12 +5,13 @@ import com.example.chatting.service.room.RoomDTO;
 import com.example.chatting.service.room.RoomService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.HashMap;
-import java.util.List;
 
 @RestController
 @RequestMapping("/room")
@@ -21,10 +22,10 @@ public class RoomController {
     private final RoomService roomService;
 
     // 방 정보 가져오기
-    @RequestMapping("/getRoomList")
+    @RequestMapping("/getPagingList")
     @ResponseBody
-    public List<RoomDTO> getRoomList() {
-        return roomService.getRoomList();
+    public Page<RoomDTO> getPagingList(Pageable pageable) {
+        return roomService.getPagingList(pageable);
     }
 
     // 방 생성하기
@@ -42,9 +43,10 @@ public class RoomController {
         RoomDTO result = roomService.findByRoomId(params);
         log.info(authMemberDTO.toString());
         if (result != null) {
-            mv.addObject("roomId", params.get("roomId"));
-            mv.addObject("roomName", params.get("roomName"));
-            mv.addObject("name", authMemberDTO.getName());
+            mv.addObject("roomId", result.getRoomId());
+            mv.addObject("roomName", result.getRoomName());
+            mv.addObject("userId", authMemberDTO.getUsername());
+            mv.addObject("username", authMemberDTO.getName());
             mv.setViewName("chatting");
         } else {
             mv.setViewName("room");

@@ -1,9 +1,11 @@
 package com.example.chatting.service.room.dsl;
 
-import com.example.chatting.service.room.QRoom;
 import com.example.chatting.service.room.QRoomEntity;
 import com.example.chatting.service.room.RoomDTO;
 import com.querydsl.core.types.Projections;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 
 import java.util.List;
@@ -30,12 +32,20 @@ public class RoomDslRepositoryImpl extends QuerydslRepositorySupport implements 
     }
 
     @Override
-    public List<RoomDTO> getRoomList() {
-        return from(roomEntity)
+    public Page<RoomDTO> getPagingList(Pageable pageable) {
+        List<RoomDTO> content = from(roomEntity)
                 .select(Projections.bean(RoomDTO.class,
                         roomEntity.roomId,
                         roomEntity.roomName
                 ))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
                 .fetch();
+
+        long total = from(roomEntity)
+                .select(roomEntity)
+                .fetchCount();
+
+        return new PageImpl<>(content, pageable, total);
     }
 }

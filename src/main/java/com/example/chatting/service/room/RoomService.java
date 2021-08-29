@@ -2,10 +2,11 @@ package com.example.chatting.service.room;
 
 import com.example.chatting.service.base.BaseService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -13,8 +14,8 @@ public class RoomService extends BaseService<String, RoomEntity, RoomDTO, RoomRe
 
     private final RoomRepository roomRepository;
 
-    public List<RoomDTO> getRoomList() {
-        return roomRepository.getRoomList();
+    public Page<RoomDTO> getPagingList(Pageable pageable) {
+        return roomRepository.getPagingList(pageable);
     }
 
     public RoomDTO createRoom(RoomDTO roomDTO) {

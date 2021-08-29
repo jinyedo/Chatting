@@ -6,11 +6,13 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 
 @MappedSuperclass
+@SuperBuilder
 @NoArgsConstructor @AllArgsConstructor
 @Getter @Setter
 public class Chatting extends BaseEntity {
@@ -19,5 +21,6 @@ public class Chatting extends BaseEntity {
     protected String chattingId;
     protected String text;
     protected String username;
+    protected String roomId;
 
 }

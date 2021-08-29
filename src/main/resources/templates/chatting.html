@@ -11,7 +11,8 @@
 
         <input type="hidden" name="sessionId" id="sessionId" value="">
         <input type="hidden" name="roomId" id="roomId" th:value="${roomId}">
-        <input type="hidden" name="name" id="name" th:value="${name}">
+        <input type="hidden" name="roomId" id="userId" th:value="${userId}">
+        <input type="hidden" name="username" id="username" th:value="${username}">
 
         <div id="chatting-grid"></div>
 
@@ -35,10 +36,11 @@
 <script th:inline="javascript">
     let ws;
     let fileClassName;
-    let name = [[${name}]];
+    let userId = [[${userId}]];
+    let username = [[${username}]];
 
     window.onload = function () {
-        console.log(name);
+        console.log(username);
         wsOpen();
     }
 
@@ -65,14 +67,14 @@
                     if (si !== "") $("#sessionId").val(si);
 
                 } else if (jsonData.type === "message") {
-                    if (jsonData.sessionId === $("#sessionId").val()) {
+                    if (jsonData.userId === $("#userId").val()) {
                         $("#chatting-grid").append(`<p class="me">${jsonData.msg}</p>`);
                     } else {
-                        $("#chatting-grid").append(`<p class="others">${jsonData.name} : ${jsonData.msg}</p>`);
+                        $("#chatting-grid").append(`<p class="others">${jsonData.username} : ${jsonData.msg}</p>`);
                     }
                 } else if (jsonData.type === "fileUpload") {
-                    fileClassName =  jsonData.sessionId === $("#sessionId").val() ? "myImg" : "othersImg";
-                    name = jsonData.name;
+                    fileClassName =  jsonData.userId === $("#userId").val() ? "myImg" : "othersImg";
+                    username = jsonData.username;
                 } else {
                     console.warn("unknown type!")
                 }
@@ -81,12 +83,10 @@
                 const url = URL.createObjectURL(new Blob([msg]));
                 console.log(url);
                 if (fileClassName === "othersImg") {
-                    $("#chatting-grid").append(`<div class="${fileClassName}"><span>${name} : </span><img class="img" src="${url}" /></div><div class="clearBoth"></div>`);
+                    $("#chatting-grid").append(`<div class="${fileClassName}"><span>${username} : </span><img class="img" src="${url}" /></div><div class="clearBoth"></div>`);
                 } else {
                     $("#chatting-grid").append(`<div class="${fileClassName}"><img class="img" src="${url}" /></div><div class="clearBoth"></div>`);
                 }
-
-
             }
         }
         document.addEventListener("keypress", function (e) {
@@ -100,7 +100,8 @@
             type : "message",
             sessionId : $("#sessionId").val(),
             roomId : $("#roomId").val(),
-            name : $("#name").val(),
+            userId : $("#userId").val(),
+            username : $("#username").val(),
             msg : $("#msg").val()
         }
         ws.send(JSON.stringify(option)); // JSON 형식으로 전달
@@ -118,7 +119,8 @@
                 filename : file.name,
                 sessionId : $("#sessionId").val(),
                 roomId : $("#roomId").val(),
-                name : $("#name").val(),
+                userId : $("#userId").val(),
+                username : $("#username").val(),
             }
             ws.send(JSON.stringify(param)); // 파일을 보내기전 메시지를 보내서 파일을 보냄을 명시한다.
             const arrayBuffer = this.result;

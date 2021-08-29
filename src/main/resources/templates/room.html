@@ -9,7 +9,16 @@
     <div class="container">
         <h1>채팅방</h1>
         <div class="wrap_room">
-            <table class="roomList"></table>
+            <table>
+                <thead>
+                    <th class="num">방 번호</th>
+                    <th class="room">방 이름</th>
+                    <th class="go"></th>
+                </thead>
+                <tbody class="roomList">
+
+                </tbody>
+            </table>
         </div>
         <div>
             <table class="inputTable">
@@ -25,32 +34,50 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
     <script th:inline="javascript">
 
-        const username = [[${username}]]
+        const userId = [[${userId}]];
 
         window.onload = function () {
-            getRoom();
+            getPagingList(page);
         }
 
-        // Ajax 로 방 목록 정보 불러오기 - 페이지 로드되면 바로 실행
-        function getRoom() {
-            commonAjax("/room/getRoomList", "", "post", null, function (result) {
-                console.log(result);
-                // 불러온 정보로 방 목록 생성
-                gridChattingRoom(result);
+        let page = 0;
+        // Ajax 로 방 목록 정보 불러오기 - 페이지 로드되면 바로 실행 or 스크롤 최하단 도착시 실행
+        function getPagingList(page) {
+            const param = {"page": page, "size" : 15};
+            commonAjax("/room/getPagingList", param, "post", "application/x-www-form-urlencoded; charset=UTF-8", function (result) {
+                gridChattingRoom(result.content);
             })
+        }
+
+        // 방 목록 뿌리기
+        function gridChattingRoom(result) {
+            let rowNum = page > 0 ? Number($(".roomList tr:last-child").find("td:first-child").text()) : 0;
+            if (result.length > 0) {
+                // 방 개수만큼 row 생성
+                let tag;
+                result.forEach(function (data, idx) {
+                    const roomId = data.roomId;
+                    const roomName = data.roomName.trim();
+                    tag += `<tr>
+                            <td class="num">${rowNum + 1}</td>
+                            <td class="room">${roomName}</td>
+                            <td class="go"><button onclick='goRoom(\"${roomId}\", \"${roomName}\")'>참여</button></td>
+                        </tr>`;
+                    rowNum++;
+                });
+                $(".roomList").append(tag);
+            }
         }
 
         // 채팅방 생성
         function createRoom() {
-            const roomName = {
-                creator : username,
+            const param = {
+                creator : userId,
                 roomName: $(".roomName").val()
             };
 
-            commonAjax("/room/createRoom", roomName, "post", null, function(result){
+            commonAjax("/room/createRoom", JSON.isPrototypeOf(param), "post", null, function(result){
                 alert("채팅방 생성이 완료되었습니다.");
-                console.log(result);
-                getRoom();
                 goRoom(result.roomId, result.roomName);
             });
 
@@ -62,35 +89,10 @@
             location.href = `/room/moveChatting?roomId=${roomId}&roomName=${roomName}`;
         }
 
-        // 방 목록 뿌리기
-        function gridChattingRoom(result) {
-            if (result !== null) {
-                // 헤더 생성
-                let tag = `<tr>
-                        <th class="num">방 번호</th>
-                        <th class="room">방 이름</th>
-                        <th class="go"></th>
-                    </tr>`;
-
-                // 방 개수만큼 row 생성
-                result.forEach(function (data, idx) {
-                    const roomId = data.roomId;
-                    const roomName = data.roomName.trim();
-                    tag += `<tr>
-                            <td class="num">${idx + 1}</td>
-                            <td class="room">${roomName}</td>
-                            <td class="go"><button onclick='goRoom(\"${roomId}\", \"${roomName}\")'>참여</button></td>
-                        </tr>`;
-                });
-                //$(".roomList").empty().append(tag);
-                $(".roomList").html(tag);
-            }
-        }
-
         function commonAjax(url, param, type, contentType, callback) {
             $.ajax({
                 url : url,
-                data : JSON.stringify(param),
+                data : param,
                 type : type,
                 contentType : contentType !== null ? contentType : "application/json; charset=UTF-8",
                 success: function (res) {
@@ -102,6 +104,17 @@
                 }
             })
         }
+
+        $(".wrap_room").scroll(function () {
+            let scrollTop = $(this).scrollTop();
+            let innerHeight = $(this).innerHeight();
+            let scrollHeight = $(this).prop("scrollHeight");
+
+            if (scrollTop + innerHeight >= scrollHeight) {
+                page++;
+                getPagingList(page);
+            }
+        });
     </script>
 </body>
 </html>

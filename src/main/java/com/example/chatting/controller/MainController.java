@@ -55,7 +55,7 @@ public class MainController {
     @GetMapping("/room")
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public String getRoom(@AuthenticationPrincipal AuthMemberDTO authMemberDTO, Model model) {
-        model.addAttribute("username", authMemberDTO.getUsername());
+        model.addAttribute("userId", authMemberDTO.getUsername());
         return "room";
     }
 

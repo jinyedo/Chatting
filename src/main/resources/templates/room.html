@@ -31,7 +31,7 @@
         </div>
     </div>
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script th:src="@{/jquery/jquery.min.js}"></script>
     <script th:inline="javascript">
 
         const userId = [[${userId}]];
@@ -76,7 +76,7 @@
                 roomName: $(".roomName").val()
             };
 
-            commonAjax("/room/createRoom", JSON.isPrototypeOf(param), "post", null, function(result){
+            commonAjax("/room/createRoom", JSON.stringify(param), "post", null, function(result){
                 alert("채팅방 생성이 완료되었습니다.");
                 goRoom(result.roomId, result.roomName);
             });
